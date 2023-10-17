@@ -5,11 +5,13 @@ total_months=0
 total_balance=0
 profit=0
 profit_avg=0
-change_monthly=int([0,0,0])
+change_monthly=[0,0,0]
 value_current=0
 value_prev=0
 value_prev_set=False
-
+change_monthly_init=False
+change_monthly_total=0
+avg_change=0
 greatest_profit=0
 greatest_profit_date=str
 loss=0
@@ -26,20 +28,29 @@ with open(csvpath, "r") as infile, open("budget_data_cleaned.csv", "w") as outfi
    for row in reader:
         total_months += 1
         total_balance+=int(row[1])
+        change_monthly[1]=change_monthly[0]
+        change_monthly[0]=int(row[1])
         #use list to hold current and past balance changes, balance[0]=current, balance[1]=previou, balance{}
-        if monthly_change_init==false
-        if  int(row[1])>0:
+        if change_monthly_init==True:
+            change_monthly[2]=change_monthly[0]-change_monthly[1]
+            change_monthly_total+=int(row[1])
+            print((change_monthly[2]))
+        else:
+            monthly_change_init=True
+
+        if int(row[1])>0: 
             profit+=int(row[1])
-
-            if int(row[1]) > greatest_profit:
-                   greatest_profit=int(row[1])
-                   grestest_profit_date=greatest_profit_date=row[0]
-
         elif int(row[1])<0:
             loss+=int(row[1])
-            if  int(row[1])<greatest_loss:
-                greatest_loss=int(row[1])
-                greatest_loss_date=greatest_loss_date=row[0]
+
+        if change_monthly[2] > greatest_profit:
+            greatest_profit=change_monthly[2]
+            grestest_profit_date=greatest_profit_date=row[0]
+        elif change_monthly[2]<0:
+             loss+=int(row[1])
+        if  change_monthly[2]<greatest_loss:
+            greatest_loss=change_monthly[2]
+            greatest_loss_date=greatest_loss_date=row[0]
         
         #print(row[0],row[1])
 
