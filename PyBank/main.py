@@ -1,24 +1,27 @@
+import array
 import os
 import csv
+import statistics
 
 total_months=0
 total_balance=0
-profit=0
-profit_avg=0
-change_monthly=[0,0,0]
-value_current=0
-value_prev=0
-value_prev_set=False
-change_monthly_init=False
-change_monthly_total=0
+monthly_change=0
+monthly_change_list=[]
+profit_days=0
+loss_days=0
+total_monthly_change=0
+cur_month_value=0
+pre_month_value=0
+total_profits_list=[]
+total_losses_list=[]
+total_profits=0
+total_losses=0
 avg_change=0
-greatest_profit=0
-greatest_profit_date=str
-loss=0
-loss_avg=0
-greatest_loss=0
-greatest_loss_date=str
-net_change=0
+greatest_increase=0
+greatest_increase_date=""
+greatest_decrease=0
+greatest_decrease_date=""
+i=0
 csvpath = os.path.join("Resources", "budget_data.csv")
 #csvpath_bonus = os.path.join("..", "Resources", "cereal_bonus.csv")
 
@@ -28,50 +31,48 @@ with open(csvpath, "r") as infile, open("budget_data_cleaned.csv", "w") as outfi
    for row in reader:
         total_months += 1
         total_balance+=int(row[1])
-        change_monthly[1]=change_monthly[0]
-        change_monthly[0]=int(row[1])
-        #use list to hold current and past balance changes, balance[0]=current, balance[1]=previou, balance{}
-        if change_monthly_init==True:
-            change_monthly[2]=change_monthly[0]-change_monthly[1]
-            change_monthly_total+=int(row[1])
-            print((change_monthly[2]))
-        else:
-            monthly_change_init=True
+        pre_month_value=cur_month_value
+        cur_month_value=int(row[1])
+        monthly_change=cur_month_value-pre_month_value
+        monthly_change_list.append(monthly_change)
+        total_monthly_change+=monthly_change
+        if monthly_change>0:
+              total_profits+=int(row[1])
+              total_profits_list.append(monthly_change)
+              profit_days+=1
+        elif monthly_change<0:
+              total_losses+=int(row[1])
+              total_losses_list.append(monthly_change)
+              loss_days+=1
+        if monthly_change > greatest_increase:
+                greatest_increase_date=row[0]
+                greatest_increase=monthly_change
+        elif monthly_change < greatest_decrease:
+                greatest_decrease_date=row[0]
+                greatest_decrease=monthly_change
 
-        if int(row[1])>0: 
-            profit+=int(row[1])
-        elif int(row[1])<0:
-            loss+=int(row[1])
-
-        if change_monthly[2] > greatest_profit:
-            greatest_profit=change_monthly[2]
-            grestest_profit_date=greatest_profit_date=row[0]
-        elif change_monthly[2]<0:
-             loss+=int(row[1])
-        if  change_monthly[2]<greatest_loss:
-            greatest_loss=change_monthly[2]
-            greatest_loss_date=greatest_loss_date=row[0]
-        
-        #print(row[0],row[1])
-
-profit_avg=profit/total_months
-loss_avg=loss/total_months
-net_change=profit_avg+loss_avg
-print(greatest_profit)
-print(greatest_profit_date)
-print(greatest_loss)
-print(greatest_loss_date)
-#print(total_months)
-#print(total_balance)
-#print(profit)
-#print(loss)
-#print(net_change)
-#print(profit_avg)
-#print(loss_avg)
-        #print(row[0],row[1])
-   #print(row[0],row[1])
-#output_file = os.path.join("budget_data_final.csv")
-#with open(output_file, "w", newline='') as datafile:
-#    writer = csv.writer(datafile)
-#    output_file = os.path.join("budget_data_final")
-#    writer.writerows(row[0],row[1])
+profits_ave=statistics.mean((total_profits_list))
+losses_ave=statistics.mean((total_losses_list))
+average_change=profits_ave+losses_ave
+print(f"total profits: {total_profits}")
+print(f"total profit days: {profit_days}")
+print(f"total profit days ave: {profits_ave}")
+print("----------------------------")
+print(f"total losses: {total_losses}")
+print(f"total loss days: {loss_days}")
+print(f"total loss days ave: {losses_ave}")
+print("----------------------------")
+print(average_change)
+print("----------------------------")
+#print(average_change)
+#print(profits_ave)
+#print(profit_days)
+#print(loss_days)
+#print(losses_ave)
+#print(average_change)
+print("Financial Analysis\n\n----------------------------\n")
+print(f"Total Months: {total_months}")
+print(f"Total: {total_balance}")
+print(f"Average Change: ${average_change}")
+print(f"Greatest Increase in Profits: {greatest_increase_date} (${greatest_increase})")
+print(f"Greatest Decrease in Profits: {greatest_decrease_date} (${greatest_decrease})")
