@@ -24,21 +24,26 @@ with open(csvpath) as csvfile:
    for row in reader:              
       total_months += 1             #month tally 
       total_balance+=int(row[1])    #row value is added to the balance each loop cycle
-      if first_month=="true":     #first row needs to be read in as the previous month value 
-            first_month="false"      #ow 1 read in as previous month value otherwise the calculation
-            pre_month_value=int(row[1]) #wrong
-      elif first_month=="false":      #after first month
+      
+      #for the first monh the first row needs to be read in as the previous month value 
+      if first_month=="true":
+           pre_month_value=int(row[1])  
+           #after first month, monthly change begins calculation 
+      elif first_month=="false":      
             cur_month_value=int(row[1]) #
             monthly_change=cur_month_value-pre_month_value #current
-            pre_month_value=cur_month_value #once the change calculation is complete, the current month variable is moved into the previous month
-            monthly_change_count+=1 #monthly change begins calculation after the first calculation
-      monthly_change_total+=monthly_change #compares monthly change each loop,
-      if monthly_change > greatest_increase: #replaced each time it is greater
-            greatest_increase_date=row[0]    #stores date
+            pre_month_value=cur_month_value #once the change calculation is complete
+            monthly_change_count+=1
+            monthly_change_total+=monthly_change
+      #greatest values are replaced by the monthly change each they are greater
+      # and the date is recorded
+      if monthly_change > greatest_increase: 
+            greatest_increase_date=row[0]
             greatest_increase=monthly_change
       elif monthly_change < greatest_decrease:
             greatest_decrease_date=row[0]
             greatest_decrease=monthly_change
+      first_month="false" #first month is complete
 average_change=monthly_change_total/monthly_change_count #calculates change average
 
 f = open('analysis/output.txt', 'w') #creates output txt file
