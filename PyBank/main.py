@@ -1,15 +1,15 @@
 import os
 import csv
+from pathlib import Path
 
 first_month="true"
-total_months=0
-total_balance=0
-monthly_change=0
-monthly_change_count=0
-monthly_change_total=0
-cur_month_value=0
-pre_month_value=0
-avg_change=0
+total_months=0 #total months in dataset
+total_balance=0 #total accumulated 
+monthly_change=0 #month to month change
+monthly_change_count=0 #tally of months for which change was calculated
+monthly_change_total=0 #total of all monthly changes
+cur_month_value=0 #current monthly value
+pre_month_value=0 #previous monthly value
 greatest_increase=0
 greatest_increase_date=""
 greatest_decrease=0
@@ -17,9 +17,10 @@ greatest_decrease_date=""
 
 csvpath = os.path.join("Resources", "budget_data.csv")
 
-with open(csvpath, "r") as infile, open("budget_data_cleaned.csv", "w") as outfile:
-   reader = csv.reader(infile)
+with open(csvpath) as csvfile:
+   reader = csv.reader(csvfile, delimiter=",")
    next(reader, None)  # skip the headers
+
    for row in reader:
       total_months += 1
       total_balance+=int(row[1])
@@ -40,9 +41,13 @@ with open(csvpath, "r") as infile, open("budget_data_cleaned.csv", "w") as outfi
             greatest_decrease=monthly_change
 average_change=monthly_change_total/(monthly_change_count)
 
-print("Financial Analysis\n----------------------------")
-print(f"Total Months: {total_months}")
-print(f"Total: ${total_balance}")
-print(f"Average Change: ${"%.2f"%average_change}")
-print(f"Greatest Increase in Profits: {greatest_increase_date} (${greatest_increase})")
-print(f"Greatest Decrease in Profits: {greatest_decrease_date} (${greatest_decrease})")
+f = open('analysis/output.txt', 'w')
+print("Financial Analysis\n----------------------------", file=f)
+print(f"Total Months: {total_months}", file=f)
+print(f"Total: ${total_balance}", file=f)
+print(f"Average Change: ${"%.2f"%average_change}", file=f)
+print(f"Greatest Increase in Profits: {greatest_increase_date} (${greatest_increase})", file=f)
+print(f"Greatest Decrease in Profits: {greatest_decrease_date} (${greatest_decrease})", file=f)
+f.close()
+with open('analysis/output.txt', 'r') as f:
+    print(f.read())
